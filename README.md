@@ -1,2 +1,2 @@
-# Projeto-Multidisciplinar-III-Ci-ncia-da-Computa-o
+# Projeto-Multidisciplinar-III-Ciencia-da-computacao
 Protótipo Interativo do Quiz Adaptativo
