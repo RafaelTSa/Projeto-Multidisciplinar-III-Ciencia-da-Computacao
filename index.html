@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo - Quiz de Tabuada Adaptativo</title>
+    <!-- Carregamento do Tailwind CSS para estilização rápida e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilização personalizada para o tema do aplicativo */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .container-card {
+            max-width: 90%;
+            margin: 0 auto;
+            min-height: 80vh;
+            border-radius: 1.5rem; /* Bordas arredondadas */
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .quiz-input {
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+        .quiz-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+        }
+        .bg-gradient-primary {
+            background-image: linear-gradient(to right, #4f46e5, #7c3aed);
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <!-- Container Principal do Aplicativo -->
+    <div id="app" class="container-card bg-white p-6 sm:p-10 my-8">
+
+        <!-- Área de Mensagens (simula alerts/modais) -->
+        <div id="message-area" class="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 p-4 rounded-lg shadow-xl text-white z-50 transition-opacity duration-300 opacity-0 hidden"></div>
+
+        <!-- Conteúdo dinâmico das telas -->
+        <div id="screen-content">
+            <!-- As telas serão carregadas aqui via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Script JavaScript para Lógica de Navegação e Simulação -->
+    <script>
+        // Dados de Simulação (Simula um Banco de Dados)
+        const appData = {
+            isProfessor: false,
+            currentScreen: 'login', // login, professor_dashboard, student_quiz
+            currentStudentId: 'aluno1',
+            professorData: [
+                { id: 'aluno1', nome: 'Ana Costa', score: 75, status: 'Dominou', dificuldades: 'Tabuadas do 2 e 5' },
+                { id: 'aluno2', nome: 'Beto Silva', score: 40, status: 'Precisa de Reforço', dificuldades: 'Tabuadas do 7 e 8' },
+                { id: 'aluno3', nome: 'Carla Souza', score: 92, status: 'Dominou', dificuldades: 'Nenhuma' },
+                { id: 'aluno4', nome: 'Dani Lima', score: 55, status: 'Precisa de Reforço', dificuldades: 'Tabuadas do 6 e 9' }
+            ],
+            quizState: {
+                questionIndex: 0,
+                questions: [
+                    { id: 1, text: 'Quanto é 7 x 8?', answer: 56, tabuada: 8 },
+                    { id: 2, text: 'Quanto é 6 x 4?', answer: 24, tabuada: 6 },
+                    { id: 3, text: 'Quanto é 9 x 3?', answer: 27, tabuada: 9 },
+                    { id: 4, text: 'Quanto é 7 x 6?', answer: 42, tabuada: 7 },
+                    { id: 5, text: 'Quanto é 8 x 5?', answer: 40, tabuada: 8 },
+                ],
+                correctAnswers: 0,
+                totalQuestions: 5,
+            }
+        };
+
+        // --- Funções de Navegação e UI ---
+
+        /** Exibe uma mensagem de feedback (simulando alert) */
+        function showMessage(text, isError = false) {
+            const msgArea = document.getElementById('message-area');
+            msgArea.textContent = text;
+            msgArea.classList.remove('opacity-0', 'hidden', 'bg-red-500', 'bg-green-500');
+            msgArea.classList.add(isError ? 'bg-red-500' : 'bg-green-500', 'opacity-100');
+
+            setTimeout(() => {
+                msgArea.classList.add('opacity-0');
+                setTimeout(() => msgArea.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        /** Renderiza o conteúdo principal da tela */
+        function renderScreen() {
+            const content = document.getElementById('screen-content');
+            let html = '';
+
+            switch (appData.currentScreen) {
+                case 'login':
+                    html = renderLoginScreen();
+                    break;
+                case 'professor_dashboard':
+                    html = renderProfessorDashboard();
+                    break;
+                case 'student_quiz':
+                    html = renderStudentQuiz();
+                    break;
+                default:
+                    html = '<h2>Erro 404: Tela não encontrada.</h2>';
+            }
+
+            content.innerHTML = html;
+            // Configura os event listeners após o HTML ser inserido
+            setupEventListeners();
+        }
+
+        /** Configura Event Listeners específicos após a renderização */
+        function setupEventListeners() {
+            if (appData.currentScreen === 'login') {
+                document.getElementById('login-btn').addEventListener('click', handleLogin);
+                document.getElementById('profile-toggle').addEventListener('change', (e) => {
+                    appData.isProfessor = e.target.checked;
+                });
+            } else if (appData.currentScreen === 'professor_dashboard') {
+                document.querySelectorAll('.start-quiz-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        appData.currentStudentId = e.target.dataset.studentId;
+                        appData.currentScreen = 'student_quiz';
+                        appData.quizState.questionIndex = 0; // Reinicia o quiz
+                        appData.quizState.correctAnswers = 0;
+                        renderScreen();
+                    });
+                });
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    appData.currentScreen = 'login';
+                    renderScreen();
+                });
+            } else if (appData.currentScreen === 'student_quiz') {
+                document.getElementById('submit-answer-btn').addEventListener('click', handleSubmitAnswer);
+            }
+        }
+
+        // --- Telas de UI ---
+
+        function renderLoginScreen() {
+            return `
+                <div class="max-w-md mx-auto p-6 sm:p-8 bg-gray-50 rounded-xl shadow-lg mt-12">
+                    <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Quiz de Tabuada Adaptativo</h1>
+                    <p class="text-center text-gray-500 mb-8">Login e Seleção de Perfil</p>
+
+                    <div class="mb-6 flex justify-center items-center">
+                        <span class="text-sm font-medium text-gray-700 mr-3">Sou Aluno</span>
+                        <label for="profile-toggle" class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="profile-toggle" class="sr-only peer" ${appData.isProfessor ? 'checked' : ''}>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                        </label>
+                        <span class="text-sm font-medium text-gray-700 ml-3">Sou Professor</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Usuário / Email</label>
+                        <input type="text" id="username" class="quiz-input w-full p-3 border rounded-lg focus:outline-none" placeholder="Digite seu usuário" value="professor@escola.com">
+                    </div>
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                        <input type="password" id="password" class="quiz-input w-full p-3 border rounded-lg focus:outline-none" placeholder="********" value="123456">
+                    </div>
+
+                    <button id="login-btn" class="w-full text-white font-bold py-3 px-4 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500 bg-gradient-primary hover:opacity-90 transition duration-150">
+                        Entrar
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderProfessorDashboard() {
+            const needsReinforcement = appData.professorData.filter(s => s.status === 'Precisa de Reforço');
+            const mastered = appData.professorData.filter(s => s.status === 'Dominou');
+
+            // Simulação de gráfico
+            const totalStudents = appData.professorData.length;
+            const reinforcementCount = needsReinforcement.length;
+            const masteredCount = mastered.length;
+            const reinforcementPercent = (reinforcementCount / totalStudents) * 100;
+            const masteredPercent = (masteredCount / totalStudents) * 100;
+
+            const studentRows = appData.professorData.map(student => `
+                <tr class="border-b hover:bg-gray-50 transition duration-100">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${student.nome}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${student.score}%</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${student.status === 'Precisa de Reforço' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                            ${student.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${student.dificuldades}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button data-student-id="${student.id}" class="start-quiz-btn text-indigo-600 hover:text-indigo-900 font-semibold transition duration-150">
+                            Iniciar Reforço
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            return `
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex justify-between items-center mb-8">
+                        <h1 class="text-3xl font-extrabold text-gray-800">Painel do Professor</h1>
+                        <button id="logout-btn" class="text-sm text-red-500 hover:text-red-700 font-medium transition duration-150">
+                            Sair
+                        </button>
+                    </div>
+
+                    <!-- Gráfico de Desempenho (Simulando o dashboard) -->
+                    <div class="bg-indigo-600 p-6 rounded-xl text-white mb-8 shadow-xl">
+                        <h2 class="text-xl font-semibold mb-3">Análise Rápida de Performance (Simula a automação do Loop)</h2>
+                        <p class="text-sm opacity-90 mb-4">O sistema detectou automaticamente os alunos que não atingiram a proficiência mínima.</p>
+                        <div class="flex flex-wrap items-center">
+                            <div class="w-full sm:w-1/3 p-2">
+                                <p class="text-3xl font-bold">${reinforcementCount}</p>
+                                <p class="text-sm">Alunos Precisando de Reforço</p>
+                            </div>
+                            <div class="w-full sm:w-2/3 p-2">
+                                <!-- Barra de progresso simulada -->
+                                <div class="w-full bg-gray-200 rounded-full h-4">
+                                    <div class="bg-red-400 h-4 rounded-l-full" style="width: ${reinforcementPercent}%"></div>
+                                    <div class="bg-green-400 h-4 rounded-r-full" style="width: ${masteredPercent}%; margin-top: -16px; margin-left: ${reinforcementPercent}%;"></div>
+                                </div>
+                                <div class="flex justify-between text-xs mt-1">
+                                    <span class="text-red-300">Reforço (${reinforcementPercent.toFixed(0)}%)</span>
+                                    <span class="text-green-300">Dominaram (${masteredPercent.toFixed(0)}%)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabela Detalhada de Alunos -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Aluno
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Score
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status (Decisão Automatizada)
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Foco de Reforço (Lógica Adaptativa)
+                                        </th>
+                                        <th scope="col" class="relative px-6 py-3">
+                                            <span class="sr-only">Ação</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    ${studentRows}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStudentQuiz() {
+            const student = appData.professorData.find(s => s.id === appData.currentStudentId) || { nome: 'Aluno Desconhecido' };
+            const currentQuestion = appData.quizState.questions[appData.quizState.questionIndex];
+            const progress = appData.quizState.questionIndex + 1;
+            const total = appData.quizState.totalQuestions;
+
+            if (!currentQuestion) {
+                // Fim do quiz
+                return `
+                    <div class="max-w-md mx-auto p-8 text-center bg-green-50 rounded-xl shadow-lg mt-12">
+                        <h2 class="text-3xl font-extrabold text-green-700 mb-4">Fim do Quiz! 🎉</h2>
+                        <p class="text-lg text-gray-600 mb-6">${student.nome}, você completou o reforço.</p>
+                        <p class="text-2xl font-semibold mb-8">Acertos: ${appData.quizState.correctAnswers} / ${total}</p>
+                        <button onclick="handleQuizEnd()" class="bg-gradient-primary text-white font-bold py-3 px-6 rounded-xl hover:opacity-90 transition duration-150">
+                            Voltar ao Painel
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Barra de progresso
+            const progressPercent = (progress / total) * 100;
+
+            return `
+                <div class="max-w-xl mx-auto">
+                    <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">${student.nome} - Quiz de Reforço</h1>
+
+                    <div class="mb-8">
+                        <div class="flex justify-between text-sm font-medium text-gray-600 mb-1">
+                            <span>Questão ${progress} de ${total}</span>
+                            <span>Progresso</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-indigo-500 h-3 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="p-8 bg-indigo-50 rounded-xl shadow-md mb-8">
+                        <p class="text-xl font-semibold text-indigo-800 mb-4">Pergunta:</p>
+                        <h2 class="text-4xl font-extrabold text-gray-900 text-center">${currentQuestion.text}</h2>
+                        <!-- Nota: Aqui é onde o algoritmo adaptativo REALMENTE funcionaria, escolhendo tabuadas difíceis. -->
+                        <p class="text-center text-sm mt-3 text-indigo-600">Foco simulado: Tabuada do ${currentQuestion.tabuada}</p>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="answer" class="block text-lg font-medium text-gray-700 mb-2">Sua Resposta:</label>
+                        <input type="number" id="answer" class="quiz-input w-full p-4 text-2xl border-2 rounded-xl text-center focus:outline-none" placeholder="Digite o resultado">
+                    </div>
+
+                    <button id="submit-answer-btn" class="w-full bg-gradient-primary text-white font-bold py-4 px-4 rounded-xl text-xl hover:opacity-90 transition duration-150 focus:outline-none focus:ring-4 focus:ring-indigo-500">
+                        Responder e Próxima Questão
+                    </button>
+                </div>
+            `;
+        }
+
+        // --- Lógica de Ações ---
+
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Simulação de autenticação
+            if (username === 'professor@escola.com' && password === '123456') {
+                if (appData.isProfessor) {
+                    appData.currentScreen = 'professor_dashboard';
+                    showMessage('Bem-vindo, Professor!', false);
+                } else {
+                    appData.currentScreen = 'student_quiz';
+                    showMessage('Bem-vindo, Aluno!', false);
+                    appData.currentStudentId = 'aluno1'; // Assume aluno padrão
+                }
+                renderScreen();
+            } else {
+                showMessage('Usuário ou senha incorretos. Tente novamente.', true);
+            }
+        }
+
+        function handleSubmitAnswer() {
+            const input = document.getElementById('answer');
+            const userAnswer = parseInt(input.value);
+            const currentQuestion = appData.quizState.questions[appData.quizState.questionIndex];
+
+            if (isNaN(userAnswer)) {
+                showMessage('Por favor, digite um número.', true);
+                return;
+            }
+
+            if (userAnswer === currentQuestion.answer) {
+                appData.quizState.correctAnswers++;
+                showMessage('Correto! ✅', false);
+            } else {
+                // A lógica adaptativa real registraria o erro aqui.
+                showMessage(`Incorreto. A resposta correta é ${currentQuestion.answer}. ❌`, true);
+            }
+
+            // Passa para a próxima questão
+            appData.quizState.questionIndex++;
+            input.value = ''; // Limpa o campo
+            renderScreen();
+        }
+
+        function handleQuizEnd() {
+            // Volta para a tela apropriada
+            if (appData.isProfessor) {
+                appData.currentScreen = 'professor_dashboard';
+            } else {
+                // Se for aluno, pode voltar para o login ou uma tela de resumo
+                appData.currentScreen = 'login';
+            }
+            renderScreen();
+        }
+
+        // Inicia o aplicativo na tela de login
+        window.onload = renderScreen;
+    </script>
+
+</body>
+</html>
