@@ -1,38 +1,36 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Tabuada Divertida - Aluno</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Quiz Tabuada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body style="font-family: Arial; text-align: center; background-color: #e0f7fa;">
-
-    <h1>Área do Aluno 🧠</h1>
-    
-    {% if msg %}
-        <div style="padding: 15px; font-weight: bold; font-size: 1.2em;">
-            {{ msg }}
-        </div>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+    {% if feedback %}
+    <div class="fixed top-5 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full text-white font-bold {{ feedback.cor }} shadow-lg">
+        {{ feedback.texto }}
+    </div>
     {% endif %}
 
-    <div style="background: white; width: 300px; margin: 0 auto; padding: 20px; border-radius: 15px; border: 3px solid #00acc1;">
-        <h2>Quanto é:</h2>
-        <p style="font-size: 3em; color: #007c91;">{{ n1 }} x {{ n2 }}</p>
+    <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-sm text-center border border-gray-100">
+        <div class="flex justify-between text-[10px] font-black text-gray-400 mb-6 uppercase tracking-widest">
+            <span>PERGUNTA {{ progresso }} / 10</span>
+            <a href="/logout" class="text-red-400">Sair</a>
+        </div>
 
-        <form method="POST">
+        <h2 class="text-indigo-500 font-black mb-2 italic tracking-tighter">QUANTO É?</h2>
+        <div class="text-7xl font-black text-slate-800 mb-8 tracking-tighter">{{ n1 }} x {{ n2 }}</div>
+
+        <form action="/aluno" method="POST" class="space-y-4">
             <input type="hidden" name="n1" value="{{ n1 }}">
             <input type="hidden" name="n2" value="{{ n2 }}">
-            
-            <input type="number" name="resposta" placeholder="?" required
-                   style="font-size: 2em; width: 80px; text-align: center;">
-            <br><br>
-            <button type="submit" style="background: #00acc1; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                Responder!
+            <input type="number" name="resposta" autofocus required placeholder="?"
+                class="w-full p-4 text-4xl text-center border-2 rounded-2xl outline-none focus:border-indigo-500 border-slate-100 bg-slate-50 text-slate-700">
+            <button type="submit" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black shadow-lg hover:bg-indigo-700 transition-all uppercase tracking-widest">
+                Confirmar
             </button>
         </form>
     </div>
-
-    <br>
-    <a href="/">Voltar para Início</a>
+    <script>setTimeout(() => { document.querySelector('.fixed')?.remove(); }, 1500);</script>
 </body>
 </html>
