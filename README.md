@@ -1,107 +1,117 @@
-🧮 Quiz de Tabuada Adaptativo - Escola Saber Mais
+# 🧮 Quiz de Tabuada Adaptativo — Escola Saber Mais
 
-Este projeto foi desenvolvido como parte do Projeto Multidisciplinar III (Ciência da Computação). A solução visa automatizar o processo de reforço escolar de matemática, eliminando o trabalho manual de correção e oferecendo um aprendizado personalizado através de uma lógica adaptativa.
+Este projeto foi desenvolvido como parte do **Projeto Multidisciplinar III** do curso de **Ciência da Computação**. A aplicação tem como objetivo **automatizar o reforço escolar de matemática**, reduzindo o trabalho manual de correção e oferecendo uma experiência de aprendizagem **personalizada e adaptativa** para os alunos.
 
-🚀 Funcionalidades Principais
+Por meio de uma lógica inteligente, o sistema identifica as dificuldades individuais de cada estudante e ajusta automaticamente os exercícios, tornando o processo de estudo mais eficiente e motivador.
 
-Perfil Aluno: Interface gamificada com feedback visual imediato (cores vibrantes para acertos e erros).
+---
 
-Lógica Adaptativa: O sistema identifica as dificuldades do aluno e prioriza as tabuadas com menor desempenho.
+## 🚀 Funcionalidades Principais
 
-Painel do Professor: Dashboard em tempo real com estatísticas da turma e identificação automática de alunos que precisam de reforço.
+### 🎮 Perfil do Aluno
 
-Persistência de Dados: Integração com MongoDB para salvar o histórico de progresso e credenciais.
+* Interface **gamificada** e intuitiva
+* Feedback visual imediato para respostas corretas e incorretas
+* Foco no aprendizado progressivo e motivador
 
-🛠️ Tecnologias Utilizadas
+### 🧠 Lógica Adaptativa
 
-Linguagem: Python 3.x
+* Análise automática do desempenho do aluno
+* Priorização das **tabuadas com menor taxa de acerto**
+* Reforço direcionado às principais dificuldades
 
-Framework Web: Flask
+### 📊 Painel do Professor
 
-Banco de Dados: MongoDB (NoSQL)
+* Dashboard em **tempo real** com estatísticas da turma
+* Identificação automática de alunos que precisam de reforço
+* Apoio à tomada de decisão pedagógica
 
-Frontend: HTML5, Tailwind CSS e Jinja2
+### 💾 Persistência de Dados
 
-Arquitetura: Cliente-Servidor (3 Camadas)
+* Armazenamento do histórico de progresso dos alunos
+* Gerenciamento de credenciais de acesso
+* Integração com banco de dados **MongoDB**
 
-🔑 Credenciais de Acesso (Teste)
+---
 
-Para testar as diferentes visões do sistema, utilize os utilizadores configurados no banco de dados:
+## 🛠️ Tecnologias Utilizadas
 
-👨‍🏫 Painel do Professor (Visão de Gestão)
+* **Linguagem:** Python 3.x
+* **Framework Web:** Flask
+* **Banco de Dados:** MongoDB (NoSQL)
+* **Frontend:** HTML5, Tailwind CSS e Jinja2
+* **Arquitetura:** Cliente-Servidor (Arquitetura em 3 Camadas)
 
-Usuário
+---
 
-Senha
+## 🔑 Credenciais de Acesso (Ambiente de Teste)
 
-Perfil
+Para testar as diferentes visões do sistema, utilize os usuários previamente configurados no banco de dados.
 
-admin
+### 👨‍🏫 Painel do Professor (Visão de Gestão)
 
-admin123
+| Usuário | Senha    | Perfil        |
+| ------- | -------- | ------------- |
+| admin   | admin123 | Administrador |
+| rafael  | 12345    | Professor     |
 
-Administrador
+### ✍️ Interface do Aluno (Quiz de Reforço)
 
-rafael
+| Usuário   | Senha    | Perfil |
+| --------- | -------- | ------ |
+| estudante | aluno123 | Aluno  |
+| joao      | tabuada  | Aluno  |
 
-12345
+---
 
-Professor
+## 📦 Como Executar o Projeto
 
-✍️ Interface do Aluno (Quiz de Reforço)
+### 1️⃣ Instalar as Dependências
 
-Usuário
-
-Senha
-
-Perfil
-
-estudante
-
-aluno123
-
-Aluno
-
-joao
-
-tabuada
-
-Aluno
-
-📦 Como Executar o Projeto
-
-Instale as dependências:
-
+```bash
 pip install flask pymongo
+```
 
+### 2️⃣ Configurar o Banco de Dados
 
-Configure o Banco de Dados:
+* Certifique-se de que o **MongoDB** está em execução localmente ou via **MongoDB Atlas**.
+* Execute o script de configuração inicial para criar os usuários e dados padrão:
 
-Certifique-se de que o MongoDB está a correr localmente (ou via Atlas).
-
-Execute o script de configuração inicial para criar os utilizadores:
-
+```bash
 python setup_db.py
+```
 
+### 3️⃣ Iniciar o Servidor
 
-Inicie o Servidor:
-
+```bash
 python app.py
+```
 
+### 4️⃣ Acessar a Aplicação
 
-Acesse no Navegador:
-Aceda a http://127.0.0.1:5000
+Abra o navegador e acesse:
 
-📊 Estrutura do Projeto
+```
+http://127.0.0.1:5000
+```
 
-app.py: Servidor principal e rotas da aplicação.
+---
 
-setup_db.py: Script para criar os utilizadores e dados iniciais no MongoDB.
+## 📊 Estrutura do Projeto
 
-templates/: Ficheiros HTML (index, aluno, professor).
+```text
+📁 projeto/
+│── app.py            # Servidor principal e rotas da aplicação
+│── setup_db.py       # Script de criação dos usuários e dados iniciais
+│── templates/        # Arquivos HTML (index, aluno, professor)
+│── README.md         # Documentação do projeto
+```
 
-README.md: Documentação do repositório.
+---
 
-Desenvolvido por: [Seu Nome / Nome do Grupo]
+## 👨‍💻 Autoria
 
-Instituição: Ciência da Computação - Projeto Multidisciplinar III
+**Desenvolvido por:** Rafael Teixeira
+
+**Curso:** Ciência da Computação
+**Disciplina:** Projeto Multidisciplinar III
