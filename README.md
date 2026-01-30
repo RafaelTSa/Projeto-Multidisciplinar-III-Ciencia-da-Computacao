@@ -36,10 +36,10 @@ Por meio de uma lógica inteligente, o sistema identifica as dificuldades indivi
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Linguagem:** Python 3.x
-* **Framework Web:** Flask
+* **Linguagem:** Python
+* **Framework Web:** Flask (Back-end)
 * **Banco de Dados:** MongoDB (NoSQL)
-* **Frontend:** HTML5, Tailwind CSS e Jinja2
+* **Frontend:** HTML5, Tailwind CSS (UI/UX)
 * **Arquitetura:** Cliente-Servidor (Arquitetura em 3 Camadas)
 
 ---
@@ -100,11 +100,16 @@ http://127.0.0.1:5000
 ## 📊 Estrutura do Projeto
 
 ```text
-📁 projeto/
-│── app.py            # Servidor principal e rotas da aplicação
-│── setup_db.py       # Script de criação dos usuários e dados iniciais
-│── templates/        # Arquivos HTML (index, aluno, professor)
-│── README.md         # Documentação do projeto
+📁 Projeto-Multidisciplinar-III-Ciencia-da-Computacao/
+/
+├── app.py                # Servidor Flask e lógica de rotas
+├── setup_db.py           # Script de configuração inicial do MongoDB
+├── templates/            # Telas da aplicação
+│   ├── index.html        # Tela de Login
+│   ├── aluno.html        # Interface do Quiz
+│   ├── professor.html    # Dashboard de gestão
+│   └── resultado.html    # Resumo do desempenho
+└── README.md             # Documentação
 ```
 
 ---
